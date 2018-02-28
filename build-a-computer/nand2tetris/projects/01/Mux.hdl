@@ -1,0 +1,75 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux.hdl
+
+/** 
+ * Multiplexor:
+ * out = a if sel == 0
+ *       b otherwise
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    /*
+    // Put your code here:
+    Not(in=a, out=Nota);
+    Not(in=b, out=Notb);
+    Not(in=sel, out=Notsel);
+
+    And(a=a, b=b, out=aAndb);
+    And(a=b, b=sel, out=bAndsel);
+    And(a=Notb, b=Notsel, out=NotbAndNotsel);
+    
+    And(a=Nota, b=bAndsel, out=V011);
+    And(a=a, b=NotbAndNotsel, out=V100);
+    And(a=aAndb, b=Notsel, out=V110);
+    And(a=aAndb, b=sel, out=V111);
+
+    Or(a=V011, b=V100, out=V011OrV100);
+    Or(a=V110, b=V111, out=V110OrV111);
+
+    Or(a=V011OrV100, b=V110OrV111, out=out);
+    */
+
+    /*
+|   a   |   b   |  sel  |  out  |
+|   0   |   0   |   0   |   0   |
+|   0   |   0   |   1   |   0   |
+|   0   |   1   |   0   |   0   |
+|   0   |   1   |   1   |   1   |
+|   1   |   0   |   0   |   1   |
+|   1   |   0   |   1   |   0   |
+|   1   |   1   |   0   |   1   |
+|   1   |   1   |   1   |   1   |
+                 
+
+                |
+                V
+
+          H           H 
+|   a   | H b   |  selH |  out  |
+|   0   | H 1   |   1 H |   1   |
+          =============
+  =====           =====
+|   1 H |   0   | H 0   |   1   |
+|   1 H |   1   | H 0   |   1   |
+  =====           =====
+          =============
+|   1   | H 1   |   1 H |   1   |
+          H           H
+          H           H
+    */
+ 
+
+// After look at this, maybe there is short way to complete this
+    And(a=b, b=sel, out=bAndsel);
+    
+    Not(in=sel, out=Notsel);
+    And(a=a, b=Notsel, out=aAndNotsel);
+
+    Or(a=bAndsel, b=aAndNotsel, out=out);
+}
