@@ -42,5 +42,37 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Put you code here:
+
+    // handle zx and zy, here made a mistake, sel should be zy not zx in second line
+    Mux16(a=x, b=false, sel=zx, out=x1);
+    Mux16(a=y, b=false, sel=zy, out=y1);
+
+    // handle nx and ny, use Mux16 since we didn't implement Xor16
+    Not16(in=x1, out=nx1);
+    Not16(in=y1, out=ny1);
+
+    Mux16(a=x1, b=nx1, sel=nx, out=x2);
+    Mux16(a=y1, b=ny1, sel=ny, out=y2);
+
+    // handle f, here made a mistake for switching the order of "and" and "add", f=0 is add, f=1 is add
+    And16(a=x2, b=y2, out=outAnd);
+    Add16(a=x2, b=y2, out=outAdd);
+
+    Mux16(a=outAnd, b=outAdd, sel=f, out=out1);
+
+    // handle no
+    Not16(in=out1, out=nout1);
+
+    // handle out and ng, since subscript cannot be used in right of "=", take care
+    Mux16(a=out1, b=nout1, sel=no, out[0..7]=lefthalf, out[8..15]=righthalf, out[15]=ng, out=out);
+
+    // handle zr
+    Or8Way(in=lefthalf, out=nzr1);
+    Or8Way(in=righthalf, out=nzr2);
+    Or(a=nzr1, b=nzr2, out=nzr);
+    Not(in=nzr, out=zr);
 }
+
+
+// How to test a chip fully coverage, it's an interesting question. 
